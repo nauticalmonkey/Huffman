@@ -146,7 +146,7 @@ void enqueueVertex(listvertex **head, listvertex *parent)
 }
 
 
-void makeLTable(vertex *vertex, char *j, long top, struct SearchingTable **table)
+void makeLTable(vertex *vertex, char *j, long above, struct SearchingTable **table)
 {
     if (vertex==NULL){
         return;
@@ -156,7 +156,7 @@ void makeLTable(vertex *vertex, char *j, long top, struct SearchingTable **table
 
     if (isLeaf(vertex))
     {
-        j[top] = '\0';
+        j[above] = '\0';
 
         (*table)[c].id = (char *)calloc(strlen(j), sizeof(char));
 
@@ -168,13 +168,13 @@ void makeLTable(vertex *vertex, char *j, long top, struct SearchingTable **table
     }
     if (vertex->left_child)
     {
-        j[top] = '0';
-        makeLTable(vertex->left_child, j, top + 1, table);
+        j[above] = '0';
+        makeLTable(vertex->left_child, j, above + 1, table);
     }
     if (vertex->right_child)
     {
-        j[top] = '1';
-        makeLTable(vertex->right_child, j, top + 1, table);
+        j[above] = '1';
+        makeLTable(vertex->right_child, j, above + 1, table);
     }
 }
 
