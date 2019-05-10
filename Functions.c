@@ -62,7 +62,7 @@ Node *buildTree(int *freqTable)
     }
 
     root = poll(&queue);
-    numCodes = root->amount;
+    numIDs = root->amount;
 
     return root;
 }
@@ -84,11 +84,11 @@ void makeLTable(Node *node, char *s, long top, struct SearchingTable **table)
     {
         s[top] = '\0';
 
-        (*table)[c].code = (char *)calloc(strlen(s), sizeof(char));
+        (*table)[c].id = (char *)calloc(strlen(s), sizeof(char));
 
         if (s != NULL)
         {
-            strcpy((*table)[c].code, s);
+            strcpy((*table)[c].id, s);
         }
     }
     if (node->left_child)
@@ -357,9 +357,9 @@ void SafeFreeLookTable(struct SearchingTable *table)
     {
         int i;
         for (i = 0; i < CHARACTERAMOUNT; i++)
-            if (table[i].code != NULL)
+            if (table[i].id != NULL)
             {
-                free(table[i].code);
+                free(table[i].id);
             }
         free(table);
     }
@@ -395,9 +395,9 @@ void printLookUpTable(struct SearchingTable *table)
     {
         int i;
         for (i = 0; i < CHARACTERAMOUNT; i++)
-            if (table[i].code != NULL)
+            if (table[i].id != NULL)
             {
-                printf("0x%x: %s\n", i, table[i].code);
+                printf("0x%x: %s\n", i, table[i].id);
             }
     }
     return;

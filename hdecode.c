@@ -1,13 +1,14 @@
 #include "hdecode.h"
+char *lnBuffer;
 
-void SafeFreeAllD(int *ft, Node *Tree, unsigned char *buff)
+void SafeFreeAllD(int *ft, Node *Tree, unsigned char *lnBuffer)
 {
     if (ft != NULL)
         SafeFreeFreqTable(ft);
     if (Tree != NULL)
         SafeFreeTree(Tree);
     if (pbuff != NULL)
-        freeBuffs(buff);
+        safebufferFree(lnBuffer);
     return;
 }
 
@@ -27,7 +28,6 @@ int decodeHeader(int inFd, Node **HenTree, int **ft)
 
     AmountofUniqCares = (int)i;
 
-    uint32_t front = 0;
     for (i = 0; i < AmountofUniqCares; i++)
     {
         if ((read(inFd, &c, sizeof(uint8_t))) <= 0)
@@ -95,7 +95,7 @@ void decodeBody(int inFd, int outFd, int numberoftCares, int numOfUniqueChars, N
         char ch;
         if (numOfUniqueChars == 1)
         {
-            for (i = 0; i < ALPHABET_SIZE; i++)
+            for (i = 0; i < CHARACTERAMOUNT; i++)
             {
                 if (ft[i] > 0)
                     ch = i;
@@ -132,7 +132,7 @@ int totChars(int *ft)
 
     int j;
 
-    for (j = 0; j < ALPHABET_SIZE; j++)
+    for (j = 0; j < CHARACTERAMOUNT; j++)
     {
         if (ft[j] > 0)
             tot += ft[j];

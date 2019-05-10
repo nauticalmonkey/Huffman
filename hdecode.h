@@ -6,7 +6,6 @@
 
 #define ENDMASK 0x80
 
-extern char *lnBuffer;
 extern int AmountofUniqCares;
 
 int decodeHeader(int , Node **, int **);

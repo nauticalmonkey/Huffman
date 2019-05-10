@@ -62,7 +62,7 @@ void printbincharpad(char c);
 
 char *buff;
 char *pbuff, *prev;
-int numCodes;
+int numIDs;
 
 #endif
 
