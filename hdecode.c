@@ -15,14 +15,13 @@ void SafeFreeAllD(int *amountTable , vertex *Tree, unsigned char *lnBuffer)
 int decodeHeader(int fileIn, vertex **HenTree, int **amountTable )
 {
     int AmountofUniqCares = 0;
-    uint32_t i;
-    uint32_t front = 0;
+    uint32_t i, front = 0;
     uint8_t c;
 
     *amountTable = buildFTable();
     if ((read(fileIn, &i, sizeof(int))) <= 0)
     {
-        fprintf(stderr, "error reading file\n");
+        fprintf(stderr, "there was an error while reading file\n");
         exit(-1);
     }
 
@@ -32,13 +31,13 @@ int decodeHeader(int fileIn, vertex **HenTree, int **amountTable )
     {
         if ((read(fileIn, &c, sizeof(uint8_t))) <= 0)
         {
-            fprintf(stderr, "error reading file\n");
+            fprintf(stderr, "there was an error while reading file\n");
             exit(-1);
         }
 
         if ((read(fileIn, &front, sizeof(uint32_t))) <= 0)
         {
-            fprintf(stderr, "error reading file\n");
+            fprintf(stderr, "there was an error while reading file\n");
             exit(-1);
         }
 
@@ -53,7 +52,7 @@ int decodeHeader(int fileIn, vertex **HenTree, int **amountTable )
     return AmountofUniqCares;
 }
 
-void decodeBody(int fileIn, int fileOut, int amounitOfTotalUniqCares, int numOfUniqueChars, vertex *HenTree, int *amountTable)
+void decodeText(int fileIn, int fileOut, int amounitOfTotalUniqCares, int numOfUniqueChars, vertex *HenTree, int *amountTable)
 {
 
     int indexBuff;
@@ -85,8 +84,8 @@ void decodeBody(int fileIn, int fileOut, int amounitOfTotalUniqCares, int numOfU
                 mask = ENDMASK;
             }
         }
-        if (write(fileOut, &HenTree->c, sizeof(unsigned char)) <= 0)
-            perror("write error\n");
+        if (write(fileOut, &HenTree->character, sizeof(unsigned char)) <= 0)
+            perror("no write for you\n");
     }
 
     if (HenTree == NULL)
@@ -120,12 +119,12 @@ void decodeFile(int fileIn, int fileOut, vertex **HenTree, int **amountTable)
 
     AmountofUniqCares = decodeHeader(fileIn, HenTree, amountTable);
 
-    decodeBody(fileIn, fileOut, careTotal(*amountTable), AmountofUniqCares, *HenTree, *amountTable);
+    decodeText(fileIn, fileOut, careTotal(*amountTable), AmountofUniqCares, *HenTree, *amountTable);
 }
 
 int careTotal(int *amountTable)
 {
-    int tot = 0;
+    int Total = 0;
 
     if (amountTable == NULL)
         return 0;
@@ -135,45 +134,45 @@ int careTotal(int *amountTable)
     for (j = 0; j < CHARACTERAMOUNT; j++)
     {
         if (amountTable[j] > 0)
-            tot += amountTable[j];
+            Total += amountTable[j];
     }
-    return tot;
+    return Total;
 }
 
 int main(int argc, char *argv[])
 {
 
-    int fileIn, fileOut, inSavedFd, outSavedFd, *amountTable;
+    int fileIn, fileOut, savedinFile, savedOutFile, *amountTable;
     vertex *root;
 
-    int readStdIn = argc == 1 || (argc == 2 && strcmp(argv[1], "-") == 0);
+    int standardin = (argc == 1 || (argc == 2 && strcmp(argv[1], "-") == 0));
 
     if (argc > 3)
     {
-        fprintf(stderr, "usage: ./hdecode infile [ ( infile | - ) [ outfile ] ]\n");
+        fprintf(stderr, "usage: %s Too many args you foo ]\n",argv[0]);
         exit(-1);
     }
 
-    if (!readStdIn)
+    if (!standardin)
     {
         if ((fileIn = open(argv[1], O_RDONLY)) == -1)
         {
             perror(argv[2]);
             exit(-1);
         }
-        inSavedFd = dup(0);
+        savedinFile = dup(0);
         dup2(fileIn, 0);
     }
 
     if (argc == 3)
     {
 
-        if ((fileOut = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0700)) == -1)
+        if ((fileOut = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0666)) == -1)
         {
             perror(argv[2]);
             exit(-1);
         }
-        outSavedFd = dup(1);
+        savedOutFile = dup(1);
         dup2(fileOut, 1);
     }
 
@@ -181,12 +180,12 @@ int main(int argc, char *argv[])
 
     if ((argc == 3 || argc == 2) && (strcmp(argv[1], "-")))
     {
-        dup2(inSavedFd, 0);
+        dup2(savedinFile, 0);
         close(fileIn);
     }
     if (argc == 3)
     {
-        dup2(outSavedFd, 1);
+        dup2(savedOutFile, 1);
         close(fileOut);
     }
 

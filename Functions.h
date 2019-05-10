@@ -32,31 +32,27 @@ typedef struct vertexList{
 
 
 int *buildFTable();
-void insertFTable(int **ft, unsigned char c);
-vertex *buildTree(int *freqTable);
-int isLeaf(vertex *n);
-void makeLTable(vertex *vertex, char *s, long top ,struct SearchingTable **table);
-
-struct SearchingTable *buildSearchTable(vertex *root);
-vertex *newvertex(unsigned char c, int freq, vertex *left, vertex *right);
-void padding ( unsigned char ch, int n );
-listvertex *newListvertex(unsigned char c, int freq, vertex *left , vertex *right);
-int size(listvertex *head);
-void pushNewvertex(listvertex **head, unsigned char c, int freq);
-void pushvertex(listvertex **head, listvertex *parent);
-void pop(listvertex ** head);
-vertex *peek(listvertex ** head);
-vertex *poll(listvertex **head);
-int isEmpty(listvertex **head);
-void transverse(listvertex *head);
-char *readLongLine(int inFd);
-void safebufferFree(char *buff);
-void SafeFreeLookTable(struct SearchingTable *table);
-void SafeFreeTree(vertex *tree);
-void SafeFreeFreqTable(int *ft);
-void checkFTable(int *ft);
-void printLookUpTable(struct SearchingTable *table);
-void printbincharpad(char c);
+void insertFTable(int **, unsigned char );
+vertex *buildTree(int *);
+int isLeaf(vertex *);
+void makeLTable(vertex *, char *, long  ,struct SearchingTable **);
+struct SearchingTable *buildSearchTable(vertex *);
+vertex *newvertex(unsigned char , int , vertex *, vertex *);
+listvertex *newListvertex(unsigned char , int , vertex * , vertex *);
+int size(listvertex *);
+void enqueueNewvertex(listvertex **, unsigned char, int );
+void enqueueVertex(listvertex **, listvertex *);
+void dequeue(listvertex ** );
+vertex *peek(listvertex ** );
+vertex *poll(listvertex **);
+int isEmpty(listvertex **);
+char *readLongLine(int );
+void safebufferFree(char *);
+void SafeFreeLookTable(struct SearchingTable *);
+void SafeFreeTree(vertex *);
+void SafeFreeFreqTable(int *);
+void checkFTable(int *);
+void checkLTable(struct SearchingTable *);
 
 
 

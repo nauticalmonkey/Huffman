@@ -39,8 +39,9 @@ vertex *buildTree(int *freqTable)
     {
         if (freqTable[i] > 0)
         {
+            enqueue
 
-            pushNewvertex(&queue, (unsigned char)i, freqTable[i]);
+            enqueueNewvertex(&queue, (unsigned char)i, freqTable[i]);
         }
     }
 
@@ -58,7 +59,7 @@ vertex *buildTree(int *freqTable)
         vertex *left = poll(&queue);
         vertex *right = poll(&queue);
         listvertex *parent = newListvertex('\0', (unsigned int)right->amount + (unsigned int)left->amount, left, right);
-        pushvertex(&queue, parent);
+        enqueueVertex(&queue, parent);
     }
 
     root = poll(&queue);
@@ -156,16 +157,9 @@ vertex *newvertex(unsigned char character, int amount, vertex *left, vertex *rig
     return new;
 }
 
-void padding(unsigned char ch, int n)
-{
-    int i;
-
-    for (i = 0; i < n; i++)
-        putchar(ch);
-}
 
 
-void pushNewvertex(listvertex **head, unsigned char c, int amount)
+void enqueueNewvertex(listvertex **head, unsigned char c, int amount)
 {
 
     listvertex *beg = *head;
@@ -202,7 +196,7 @@ void pushNewvertex(listvertex **head, unsigned char c, int amount)
     }
 }
 
-void pushvertex(listvertex **head, listvertex *parent)
+void enqueueVertex(listvertex **head, listvertex *parent)
 {
 
     listvertex *beg = *head;
@@ -241,7 +235,7 @@ void pushvertex(listvertex **head, listvertex *parent)
         beg->next = parent;
     }
 }
-void pop(listvertex **head)
+void dequeue(listvertex **head)
 {
     listvertex *temp = *head;
 
@@ -269,7 +263,7 @@ vertex *poll(listvertex **head)
         temp->right_child = peek(head)->right_child;
         temp->left_child = peek(head)->left_child;
 
-        pop(head);
+        dequeue(head);
     }
     return temp;
 }
@@ -279,44 +273,6 @@ int isEmpty(listvertex **head)
     return (*head) == NULL;
 }
 
-void transverse(listvertex *head)
-{
-    while (head->next != NULL)
-    {
-        printf("vertex chacter %c and  %d\n", head->curr->c, head->curr->amount);
-        head = head->next;
-    }
-    printf("vertex chacter %c and  %d\n", head->curr->c, head->curr->amount);
-}
-
-void print_binary(char x)
-{
-    int b = 128;
-
-    while (b != 0)
-    {
-
-        if (b <= x)
-        {
-            x -= b;
-            printf("1");
-        }
-        else
-            printf("0");
-
-        b = b >> 1;
-    }
-}
-
-void printbincharpad(char c)
-{
-    int i;
-    for (i = 7; i >= 0; --i)
-    {
-        putchar((c & (1 << i)) ? '1' : '0');
-    }
-    putchar('\n');
-}
 
 char *readLongLine(int inFd)
 {
@@ -380,18 +336,18 @@ void SafeFreeTree(vertex *tree)
     }
 }
 
-void checkFTable(int *freqTable)
+void checkFTable(int *Table)
 {
     int i;
     for (i = 0; i < CHARACTERAMOUNT; i++)
     {
-        if (freqTable[i] > 0)
-            printf("freqTable[ %c ] = %d\n", (unsigned char)i, freqTable[i]);
+        if (Table[i] > 0)
+            printf("Table[ %c ] = %d\n", (unsigned char)i, Table[i]);
     }
 }
 
 
-void printLookUpTable(struct SearchingTable *table)
+void checkLTable(struct SearchingTable *table)
 {
     if (table != NULL)
     {
