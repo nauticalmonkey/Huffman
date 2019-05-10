@@ -1,6 +1,5 @@
 #include "hencode.h"
 
-
 int HowManyBits(struct SearchingTable *table)
 {
     int AmountB = 0;
@@ -98,7 +97,7 @@ int main(int argc, char *argv[])
     vertex *head = NULL;
     Header *header = NULL, *startingHead = NULL;
     uint8_t output;
-    uint32_t CharactersInForest, nuthin=0;
+    uint32_t CharactersInForest, nuthin = 0;
 
     if (argc == 1 || argc > 3)
     {
@@ -181,7 +180,7 @@ int main(int argc, char *argv[])
 
     if (AmountofUniqCares == 0)
     {
-        /*write(1, &nuthin, sizeof(uint32_t));*/
+        write(1, &nuthin, sizeof(uint32_t));
     }
 
     SafeFreeAll(head, IdTable, ft, startingHead);
