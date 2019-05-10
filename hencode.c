@@ -1,42 +1,41 @@
 #include "hencode.h"
 
-fieldHeader *generateHeader(int *ft, int AmountofUniqCaress)
+Header *CreateHead(int *ft, int AmountofUniqCares)
 {
-    fieldHeader *header = NULL;
+    Header *header = NULL;
     int i;
-    int header_inc = 0;
-
-    header = (fieldHeader *)calloc(AmountofUniqCaress, sizeof(fieldHeader));
+    int next = 0;
+    header = (Header *)calloc(AmountofUniqCares, sizeof(Header));
 
     for (i = 0; i < ALPHABET_SIZE; i++)
     {
         if (ft[i] > 0)
         {
-            header[(unsigned char)header_inc].frequency = (uint32_t)ft[i];
-            header[(unsigned char)header_inc].character = (uint8_t)i;
-            header_inc++;
+            header[(unsigned char)next].frequency = (uint32_t)ft[i];
+            header[(unsigned char)next].character = (uint8_t)i;
+            next++;
         }
     }
     return header;
 }
 
-void printFieldHeader(fieldHeader *header, int AmountofUniqCaress)
+void CheackHead(Header *header, int AmountofUniqCares)
 {
     int i;
-    for (i = 0; i < AmountofUniqCaress; ++i)
+    for (i = 0; i < AmountofUniqCares; ++i)
     {
         printf("| %c | %u |", (char)header[i].character, header[i].frequency);
     }
 }
 
-void freeHeader(fieldHeader *header)
+void SafeFreeHeader(Header *header)
 {
     if (header != NULL)
         free(header);
     return;
 }
 
-int writeBits(char c, int lenCode, uint8_t *byte, struct lookUpTable *codeTable)
+int BWrite(char c, int lenCode, uint8_t *byte, struct SearchingTable *codeTable)
 {
     int static bits_Left_to_write = BYTE;
     char *temp;
@@ -66,27 +65,27 @@ int writeBits(char c, int lenCode, uint8_t *byte, struct lookUpTable *codeTable)
     return bits_Left_to_write;
 }
 
-void freeEveryThing(Node *huffmanTree, struct lookUpTable *table, int *freqTable, fieldHeader *header)
+void SafeFreeAll(Node *huffmanTree, struct SearchingTable *table, int *freqTable, Header *header)
 {
-    freeHeader(header);
-    freeFreqTable(freqTable);
-    freeLookUpTable(table);
-    freeHuffmanTree(huffmanTree);
+    SafeFreeHeader(header);
+    SafeFreeFreqTable(freqTable);
+    SafeFreeLookTable(table);
+    SafeFreeTree(huffmanTree);
 }
 
-int numBitsOfCode(struct lookUpTable *table)
+int HowManyBits(struct SearchingTable *table)
 {
-    int numBits = 0;
+    int AmountB = 0;
     int j;
     if (table != NULL)
         for (j = 0; j < ALPHABET_SIZE; ++j)
             if (table[j].code != NULL)
             {
-                numBits += strlen(table[j].code);
+                AmountB += strlen(table[j].code);
                 printf("character: %c,   code length : %ld , for %s\n", j, strlen(table[j].code), table[j].code);
             }
 
-    return numBits;
+    return AmountB;
 }
 
 int main(int argc, char *argv[])
@@ -95,9 +94,9 @@ int main(int argc, char *argv[])
     int inFd, outFd, outSavedFd, *ft = NULL;
     unsigned char c;
     Node *head = NULL;
-    struct lookUpTable *codeTable = NULL;
+    struct SearchingTable *codeTable = NULL;
     uint32_t CharactersInForest;
-    fieldHeader *header = NULL, *baseHeader = NULL;
+    Header *header = NULL, *baseHeader = NULL;
     uint8_t output;
     uint32_t output_for_nothing = 0;
     int divisablity_by_8;
@@ -149,7 +148,7 @@ int main(int argc, char *argv[])
 
     if (AmountofUniqCares > 0)
     {
-        header = baseHeader = generateHeader(ft, CharactersInForest);
+        header = baseHeader = CreateHead(ft, CharactersInForest);
 
         for (i = 0; i < CharactersInForest + 1 && bitermcbiter> 0; i++)
         {
@@ -172,7 +171,7 @@ int main(int argc, char *argv[])
         while (read(inFd, &c, sizeof(uint8_t)) > 0)
         {
 
-            divisablity_by_8 = writeBits(c, strlen(codeTable[(unsigned)c].code), &output, codeTable);
+            divisablity_by_8 = BWrite(c, strlen(codeTable[(unsigned)c].code), &output, codeTable);
         }
 
         if (divisablity_by_8 != BYTE)
@@ -188,7 +187,7 @@ int main(int argc, char *argv[])
         write(1, &output_for_nothing, sizeof(uint32_t));
     }
 
-    freeEveryThing(head, codeTable, ft, baseHeader);
+    SafeFreeAll(head, codeTable, ft, baseHeader);
 
     if (argc == 3)
     {

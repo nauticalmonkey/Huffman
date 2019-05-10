@@ -1,11 +1,11 @@
 #include "hdecode.h"
 
-void freeEveryThing(int *ft, Node *Tree, unsigned char *buff)
+void SafeFreeAllD(int *ft, Node *Tree, unsigned char *buff)
 {
     if (ft != NULL)
-        freeFreqTable(ft);
+        SafeFreeFreqTable(ft);
     if (Tree != NULL)
-        freeHuffmanTree(Tree);
+        SafeFreeTree(Tree);
     if (pbuff != NULL)
         freeBuffs(buff);
     return;
@@ -13,8 +13,8 @@ void freeEveryThing(int *ft, Node *Tree, unsigned char *buff)
 
 int decodeHeader(int inFd, Node **huffmanTree, int **ft)
 {
-    int numUniqueOfChars;
-    numUniqueOfChars = 0;
+    int AmountofUniqCares;
+    AmountofUniqCares = 0;
 
     uint32_t i;
 
@@ -27,11 +27,11 @@ int decodeHeader(int inFd, Node **huffmanTree, int **ft)
         exit(-1);
     }
 
-    numUniqueOfChars = (int)i;
+    AmountofUniqCares = (int)i;
 
     uint32_t ft_adder;
     ft_adder = 0;
-    for (i = 0; i < numUniqueOfChars; i++)
+    for (i = 0; i < AmountofUniqCares; i++)
     {
         if ((read(inFd, &c, sizeof(uint8_t))) <= 0)
         {
@@ -53,7 +53,7 @@ int decodeHeader(int inFd, Node **huffmanTree, int **ft)
         *huffmanTree = buildHuffTree(*ft);
     }
 
-    return numUniqueOfChars;
+    return AmountofUniqCares;
 }
 
 void decodeBody(int inFd, int outFd, int numTotalChars, int numOfUniqueChars, Node *huffmanTree, int *ft)
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
         close(outFd);
     }
 
-    freeEveryThing(ft, root, buff);
+    SafeFreeAllD(ft, root, buff);
 
     return 0;
 }

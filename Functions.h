@@ -8,9 +8,9 @@
 #include <string.h>
 #include <stddef.h>
 #include <fcntl.h>
-/*#include <unistd.h>*/
+#include <unistd.h>
 
-struct lookUpTable{
+struct SearchingTable{
         char *code;
 };
 
@@ -31,15 +31,15 @@ typedef enum boolean{FALSE,TRUE} bool;
 int *buildFreqTable();
 void insertToFreqTable(int **ft, unsigned char c);
 void printFreqTable(int *ft);
-void freeFreqTable(int *ft);
+void SafeFreeFreqTable(int *ft);
 Node *buildHuffTree(int *freqTable);
 void inorder(Node *root);
 int isLeaf(Node *n);
-void freeHuffmanTree(Node *tree);
-void initLookUpTable(Node *node, char *s, long top ,struct lookUpTable **table);
-struct lookUpTable *buildLookUpTable(Node *root);
-void printLookUpTable(struct lookUpTable *table);
-void freeLookUpTable(struct lookUpTable *table);
+void SafeFreeTree(Node *tree);
+void initLookUpTable(Node *node, char *s, long top ,struct SearchingTable **table);
+struct SearchingTable *buildLookUpTable(Node *root);
+void printLookUpTable(struct SearchingTable *table);
+void SafeFreeLookTable(struct SearchingTable *table);
 Node *newNode(unsigned char c, int freq, Node *left, Node *right);
 void padding ( unsigned char ch, int n );
 void structure ( struct node *root, int level );

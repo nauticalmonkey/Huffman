@@ -1,5 +1,5 @@
 #include "Functions.h"
-int numUniqueChar = 0;
+int AmountofUniqCares = 0;
 int Indexer = 0;
 
 int *buildFreqTable()
@@ -21,7 +21,7 @@ void insertToFreqTable(int **ft, unsigned char c)
     {
         if (ft[0][(unsigned char)c] == 0)
         {
-            numUniqueChar++;
+            AmountofUniqCares++;
         }
 
         ft[0][(unsigned char)c]++;
@@ -39,12 +39,13 @@ void printFreqTable(int *freqTable)
     }
 }
 
-void freeFreqTable(int *ft)
+void SafeFreeFreqTable(int *ft)
 {
     if (ft != NULL)
         free(ft);
     return;
 }
+
 
 Node *buildHuffTree(int *freqTable)
 {
@@ -101,19 +102,19 @@ int isLeaf(Node *n)
     return FALSE;
 }
 
-void freeHuffmanTree(Node *tree)
+void SafeFreeTree(Node *tree)
 {
     if (tree == NULL)
         return;
     else
     {
-        freeHuffmanTree(tree->left_child);
-        freeHuffmanTree(tree->right_child);
+        SafeFreeTree(tree->left_child);
+        SafeFreeTree(tree->right_child);
         free(tree);
     }
 }
 
-void initLookUpTable(Node *node, char *s, long top, struct lookUpTable **table)
+void initLookUpTable(Node *node, char *s, long top, struct SearchingTable **table)
 {
 
     unsigned char c = (unsigned char)node->c;
@@ -141,16 +142,16 @@ void initLookUpTable(Node *node, char *s, long top, struct lookUpTable **table)
     }
 }
 
-struct lookUpTable *buildLookUpTable(Node *root)
+  struct SearchingTable *buildLookUpTable(Node *root)
 {
-    struct lookUpTable *table = (struct lookUpTable *)calloc(ALPHABET_SIZE + 1, sizeof(struct lookUpTable));
+    struct SearchingTable *table = (struct SearchingTable *)calloc(ALPHABET_SIZE + 1, sizeof(struct SearchingTable));
     char *s = (char *)calloc(ALPHABET_SIZE, sizeof(char));
     initLookUpTable(root, s, 0, &table);
     free(s);
     return table;
 }
 
-void printLookUpTable(struct lookUpTable *table)
+void printLookUpTable(struct SearchingTable *table)
 {
     if (table != NULL)
     {
@@ -164,7 +165,7 @@ void printLookUpTable(struct lookUpTable *table)
     return;
 }
 
-void freeLookUpTable(struct lookUpTable *table)
+void SafeFreeLookTable(struct SearchingTable *table)
 {
     if (table != NULL)
     {
