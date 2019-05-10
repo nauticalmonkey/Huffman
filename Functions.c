@@ -39,7 +39,6 @@ vertex *buildTree(int *freqTable)
     {
         if (freqTable[i] > 0)
         {
-            enqueue
 
             enqueueNewvertex(&queue, (unsigned char)i, freqTable[i]);
         }
@@ -63,7 +62,7 @@ vertex *buildTree(int *freqTable)
     }
 
     root = poll(&queue);
-    numCodes = root->amount;
+    numIDs = root->amount;
 
     return root;
 }
@@ -224,7 +223,7 @@ void enqueueVertex(listvertex **head, listvertex *parent)
         if (beg->next != NULL && beg->next->curr->amount == parent->curr->amount)
         {
 
-            while (beg->next != NULL && beg->next->curr->amount == parent->curr->amount && beg->next->curr->c < parent->curr->c)
+            while (beg->next != NULL && beg->next->curr->amount == parent->curr->amount && beg->next->curr->character < parent->curr->character)
             {
 
                 beg = beg->next;

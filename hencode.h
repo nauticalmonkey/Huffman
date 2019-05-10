@@ -24,7 +24,7 @@ Header *CreateHead(int *, int );
 void CheackHead(Header *, int );
 int HowManyBits(struct SearchingTable *);
 int BWrite(char , int , struct SearchingTable* , uint8_t*);
-void SafeFreeAll(Node *, struct SearchingTable *, int *, Header *);
+void SafeFreeAll(vertex *, struct SearchingTable *, int *, Header *);
 void SafeFreeHeader(Header *);
 #endif
 

@@ -2,8 +2,8 @@ CC = gcc
 CFLAGS = -Wall -ansi -pedantic -g
 EMAIN = hencode
 DMAIN = hdecode
-EOBJ = hencode.o freqTable.o
-DOBJ = hdecode.o freqTable.o 
+EOBJ = hencode.o Functions.o
+DOBJ = hdecode.o Functions.o 
 
 
 all : $(EMAIN) $(DMAIN)
@@ -20,8 +20,8 @@ hencode.o : hencode.c hencode.h
 hdecode.o : hdecode.c hdecode.h
 	$(CC) $(CFLAGS) -c hdecode.c
 
-freqTable.o : freqTable.c freqTable.h
-	$(CC) $(CFLAGS) -c freqTable.c
+Functions.o : Functions.c Functions.h
+	$(CC) $(CFLAGS) -c Functions.c
 
 clean :
 	rm *.o $(MAIN) core

@@ -81,7 +81,7 @@ void SafeFreeHeader(Header *header)
     return;
 }
 
-void SafeFreeAll(Node *huffmanTree, struct SearchingTable *table, int *freqTable, Header *header)
+void SafeFreeAll(vertex *huffmanTree, struct SearchingTable *table, int *freqTable, Header *header)
 {
     SafeFreeHeader(header);
     SafeFreeFreqTable(freqTable);
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
     int inFd, outputFile, i, ByteChecker, aOutput, *ft = NULL, bitermcbiter = 1;
     unsigned char c;
     struct SearchingTable *IdTable = NULL;
-    Node *head = NULL;
+    vertex *head = NULL;
     Header *header = NULL, *startingHead = NULL;
     uint8_t output;
     uint32_t CharactersInForest, nuthin=0;
