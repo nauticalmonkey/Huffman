@@ -55,6 +55,6 @@ void checkLTable(struct SearchingTable *);
 
 
 char *buff;
-char *pbuff, *prev;
+char *partal, *prev;
 int numIDs;
 

@@ -7,7 +7,7 @@ void SafeFreeAllD(int *amountTable , vertex *Tree, unsigned char *lnBuffer)
         SafeFreeFreqTable(amountTable );
     if (Tree != NULL)
         SafeFreeTree(Tree);
-    if (pbuff != NULL)
+    if (partal != NULL)
         safebufferFree(lnBuffer);
     return;
 }
@@ -57,7 +57,6 @@ void decodeText(int fileIn, int fileOut, int amounitOfTotalUniqCares, int numOfU
 
     int indexBuff;
     int i;
-    int numCodes = 0;
     uint8_t mask = ENDMASK;
 
     vertex *root = HenTree;
@@ -85,7 +84,7 @@ void decodeText(int fileIn, int fileOut, int amounitOfTotalUniqCares, int numOfU
             }
         }
         if (write(fileOut, &HenTree->character, sizeof(unsigned char)) <= 0)
-            fprintf("no write for you\n");
+            fprintf(stderr,"no write for you\n");
     }
 
     if (HenTree == NULL)
@@ -104,7 +103,7 @@ void decodeText(int fileIn, int fileOut, int amounitOfTotalUniqCares, int numOfU
         {
             if (write(fileOut, &ch, sizeof(unsigned char)) <= 0)
             {
-                fprintf("write error\n");
+                fprintf(stderr,"write error\n");
             }
             amounitOfTotalUniqCares--;
         }
@@ -115,7 +114,6 @@ void decodeFile(int fileIn, int fileOut, vertex **HenTree, int **amountTable)
 {
 
     int AmountofUniqCares;
-    int i;
 
     AmountofUniqCares = decodeHeader(fileIn, HenTree, amountTable);
 
@@ -125,11 +123,10 @@ void decodeFile(int fileIn, int fileOut, vertex **HenTree, int **amountTable)
 int careTotal(int *amountTable)
 {
     int Total = 0;
+    int j;
 
     if (amountTable == NULL)
         return 0;
-
-    int j;
 
     for (j = 0; j < CHARACTERAMOUNT; j++)
     {
@@ -194,3 +191,5 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+

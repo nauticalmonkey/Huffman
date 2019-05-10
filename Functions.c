@@ -79,11 +79,13 @@ listvertex *newListvertex(unsigned char c, int amount, vertex *left, vertex *rig
 
 int size(listvertex *head)
 {
-    if (head == NULL)
-        return 0;
-    else if (head->next == NULL)
-        return 1;
     int count = 1;
+    if (head == NULL){
+        return 0;
+    }
+    else if (head->next == NULL){
+        return 1;
+    }
 
     while (head->next)
     {
@@ -264,21 +266,20 @@ char *readLongLine(int inFd)
 {
     int sizebuff = BUFFERAMOUNT;
     char c;
-    int onebuff = 0;
 
-    pbuff = (char *)calloc(BUFFERAMOUNT, sizeof(char));
+    partal = (char *)calloc(BUFFERAMOUNT, sizeof(char));
 
     while ((read(inFd, &c, sizeof(char))) > 0)
     {
-        pbuff[Indexer++] = c;
+        partal[Indexer++] = c;
         if (Indexer >= BUFFERAMOUNT - 1)
         {
             sizebuff = sizebuff + BUFFERAMOUNT;
-            pbuff = (char *)realloc(pbuff, sizebuff);
+            partal = (char *)realloc(partal, sizebuff);
         }
     }
 
-    return pbuff;
+    return partal;
 }
 
 
