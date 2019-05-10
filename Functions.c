@@ -148,22 +148,23 @@ void enqueueVertex(listvertex **head, listvertex *parent)
 
 void makeLTable(vertex *vertex, char *j, long above, struct SearchingTable **table)
 {
+
+    /* unsigned char c = (unsigned char)vertex->character; */
     if (vertex==NULL){
         return;
     }
 
-    unsigned char c = (unsigned char)vertex->character;
 
     if (isLeaf(vertex))
     {
         j[above] = '\0';
 
-        (*table)[c].id = (char *)calloc(strlen(j), sizeof(char));
+        (*table)[vertex->character].id = (char *)calloc(CHARACTERAMOUNT, sizeof(char));
 
-        if (j != NULL && (*table)[c].id != NULL)
+        if (j != NULL)
         {
 
-            strcpy((*table)[c].id, j);
+            strcpy((*table)[vertex->character].id, j);
         }
     }
     if (vertex->left_child)
