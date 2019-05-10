@@ -1,5 +1,3 @@
-#ifndef FREQTABLE
-#define FREQTABLE
 
 #define CHARACTERAMOUNT 256
 #define BUFFERAMOUNT 1200 
@@ -24,7 +22,7 @@ typedef struct vertex{
 }vertex;
 
 typedef struct vertexList{
-    vertex *curr;
+    vertex *me;
     struct  vertexList *next;
 }listvertex;
 
@@ -59,6 +57,4 @@ void checkLTable(struct SearchingTable *);
 char *buff;
 char *pbuff, *prev;
 int numIDs;
-
-#endif
 

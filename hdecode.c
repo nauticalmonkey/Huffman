@@ -85,7 +85,7 @@ void decodeText(int fileIn, int fileOut, int amounitOfTotalUniqCares, int numOfU
             }
         }
         if (write(fileOut, &HenTree->character, sizeof(unsigned char)) <= 0)
-            perror("no write for you\n");
+            fprintf("no write for you\n");
     }
 
     if (HenTree == NULL)
@@ -104,7 +104,7 @@ void decodeText(int fileIn, int fileOut, int amounitOfTotalUniqCares, int numOfU
         {
             if (write(fileOut, &ch, sizeof(unsigned char)) <= 0)
             {
-                perror("write error\n");
+                fprintf("write error\n");
             }
             amounitOfTotalUniqCares--;
         }
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
     {
         if ((fileIn = open(argv[1], O_RDONLY)) == -1)
         {
-            perror(argv[2]);
+            fprintf(stderr,"%s ther was an error", argv[2]);
             exit(-1);
         }
         savedinFile = dup(0);
@@ -167,11 +167,12 @@ int main(int argc, char *argv[])
     if (argc == 3)
     {
 
-        if ((fileOut = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0666)) == -1)
+        if ((fileOut = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0666)) == -1)
         {
-            perror(argv[2]);
+            fprintf(stderr,"%s ther was an error",argv[2]);
             exit(-1);
         }
+        
         savedOutFile = dup(1);
         dup2(fileOut, 1);
     }

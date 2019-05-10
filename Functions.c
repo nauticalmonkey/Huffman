@@ -71,7 +71,7 @@ listvertex *newListvertex(unsigned char c, int amount, vertex *left, vertex *rig
 {
     listvertex *new = (listvertex *)malloc(sizeof(listvertex));
 
-    new->curr = newvertex(c, amount, left, right);
+    new->me = newvertex(c, amount, left, right);
 
     new->next = NULL;
     return new;
@@ -103,40 +103,81 @@ int isLeaf(vertex *n)
     return FALSE;
 }
 
-void makeLTable(vertex *vertex, char *s, long top, struct SearchingTable **table)
+void enqueueVertex(listvertex **head, listvertex *parent)
+{
+
+    listvertex *rover = *head;
+
+    if (!*head)
+    {
+        *head = parent;
+        return;
+    }
+
+    if (rover->me->amount > parent->me->amount)
+    {
+        parent->next = *head;
+        *head = parent;
+    }
+
+    else
+    {
+
+        while (rover->next != NULL && rover->next->me->amount < parent->me->amount)
+        {
+            rover = rover->next;
+        }
+
+        if (rover->next != NULL && rover->next->me->amount == parent->me->amount)
+        {
+
+            while (rover->next != NULL && rover->next->me->amount == parent->me->amount && rover->next->me->character < parent->me->character)
+            {
+
+                rover = rover->next;
+            }
+        }
+
+        parent->next = rover->next;
+        rover->next = parent;
+    }
+}
+
+
+void makeLTable(vertex *vertex, char *j, long top, struct SearchingTable **table)
 {
 
     unsigned char c = (unsigned char)vertex->character;
 
     if (isLeaf(vertex))
     {
-        s[top] = '\0';
+        j[top] = '\0';
 
-        (*table)[c].id = (char *)calloc(strlen(s), sizeof(char));
+        (*table)[c].id = (char *)calloc(strlen(j), sizeof(char));
 
-        if (s != NULL)
+        if (j != NULL)
         {
-            strcpy((*table)[c].id, s);
+            strcpy((*table)[c].id, j);
         }
     }
     if (vertex->left_child)
     {
-        s[top] = '0';
-        makeLTable(vertex->left_child, s, top + 1, table);
+        j[top] = '0';
+        makeLTable(vertex->left_child, j, top + 1, table);
     }
     if (vertex->right_child)
     {
-        s[top] = '1';
-        makeLTable(vertex->right_child, s, top + 1, table);
+        j[top] = '1';
+        makeLTable(vertex->right_child, j, top + 1, table);
     }
 }
 
   struct SearchingTable *buildSearchTable(vertex *root)
 {
     struct SearchingTable *table = (struct SearchingTable *)calloc(CHARACTERAMOUNT + 1, sizeof(struct SearchingTable));
-    char *s = (char *)calloc(CHARACTERAMOUNT, sizeof(char));
-    makeLTable(root, s, 0, &table);
-    free(s);
+    char *j = (char *)calloc(CHARACTERAMOUNT, sizeof(char));
+    makeLTable(root, j, 0, &table);
+    free(j);
     return table;
 }
 
@@ -161,7 +202,7 @@ vertex *newvertex(unsigned char character, int amount, vertex *left, vertex *rig
 void enqueueNewvertex(listvertex **head, unsigned char c, int amount)
 {
 
-    listvertex *beg = *head;
+    listvertex *rover = *head;
     listvertex *tempvertex;
 
     tempvertex = newListvertex(c, amount, NULL, NULL);
@@ -172,7 +213,7 @@ void enqueueNewvertex(listvertex **head, unsigned char c, int amount)
         return;
     }
 
-    if (beg->curr->amount > amount)
+    if (rover->me->amount > amount)
     {
         tempvertex->next = *head;
         *head = tempvertex;
@@ -180,92 +221,38 @@ void enqueueNewvertex(listvertex **head, unsigned char c, int amount)
     else
     {
 
-        while (beg->next != NULL && beg->next->curr->amount < amount)
+        while (rover->next != NULL && rover->next->me->amount < amount)
         {
-            beg = beg->next;
+            rover = rover->next;
         }
 
-        while (beg->next != NULL && beg->next->curr->amount == amount && beg->next->curr->character < c)
+        while (rover->next != NULL && rover->next->me->amount == amount && rover->next->me->character < c)
         {
 
-            beg = beg->next;
+            rover = rover->next;
         }
-        tempvertex->next = beg->next;
-        beg->next = tempvertex;
+        tempvertex->next = rover->next;
+        rover->next = tempvertex;
     }
 }
 
-void enqueueVertex(listvertex **head, listvertex *parent)
+vertex *peek(listvertex **head)
 {
-
-    listvertex *beg = *head;
-
-    if (!*head)
-    {
-        *head = parent;
-        return;
-    }
-
-    if (beg->curr->amount > parent->curr->amount)
-    {
-        parent->next = *head;
-        *head = parent;
-    }
-
-    else
-    {
-
-        while (beg->next != NULL && beg->next->curr->amount < parent->curr->amount)
-        {
-            beg = beg->next;
-        }
-
-        if (beg->next != NULL && beg->next->curr->amount == parent->curr->amount)
-        {
-
-            while (beg->next != NULL && beg->next->curr->amount == parent->curr->amount && beg->next->curr->character < parent->curr->character)
-            {
-
-                beg = beg->next;
-            }
-        }
-
-        parent->next = beg->next;
-        beg->next = parent;
-    }
+    return (*head)->me;
 }
+
+
 void dequeue(listvertex **head)
 {
     listvertex *temp = *head;
 
     (*head) = (*head)->next;
 
-    free(temp->curr);
+    free(temp->me);
     free(temp);
 }
 
-vertex *peek(listvertex **head)
-{
-    return (*head)->curr;
-}
 
-vertex *poll(listvertex **head)
-{
-    vertex *temp = (vertex *)malloc(sizeof(vertex));
-
-    if (*head == NULL)
-        return NULL;
-    else
-    {
-        temp->character = peek(head)->character;
-        temp->amount = peek(head)->amount;
-        temp->right_child = peek(head)->right_child;
-        temp->left_child = peek(head)->left_child;
-
-        dequeue(head);
-    }
-    return temp;
-}
 
 int isEmpty(listvertex **head)
 {
@@ -292,6 +279,25 @@ char *readLongLine(int inFd)
     }
 
     return pbuff;
+}
+
+
+vertex *poll(listvertex **head)
+{
+    vertex *temp = (vertex *)malloc(sizeof(vertex));
+
+    if (*head == NULL)
+        return NULL;
+    else
+    {
+        temp->character = peek(head)->character;
+        temp->amount = peek(head)->amount;
+        temp->right_child = peek(head)->right_child;
+        temp->left_child = peek(head)->left_child;
+
+        dequeue(head);
+    }
+    return temp;
 }
 
 void safebufferFree(char *buff)

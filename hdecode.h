@@ -1,5 +1,4 @@
-#ifndef HDECODE_H
-#define HDECODE_H
+
 
 #include "Functions.h"
 #include <stdint.h>
@@ -13,4 +12,3 @@ void decodeFile(int , int , vertex **, int **);
 void decodeText(int , int , int , int , vertex *, int *);
 int careTotal(int *);
 
-#endif

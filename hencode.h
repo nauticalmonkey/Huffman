@@ -1,5 +1,4 @@
-#ifndef HENCODE_H
-#define HENCODE_H
+
 #define BYTE 8.0
 #define MASK 1
 
@@ -26,5 +25,3 @@ int HowManyBits(struct SearchingTable *);
 int BWrite(char , int , struct SearchingTable* , uint8_t*);
 void SafeFreeAll(vertex *, struct SearchingTable *, int *, Header *);
 void SafeFreeHeader(Header *);
-#endif
-
