@@ -159,7 +159,9 @@ void makeLTable(vertex *vertex, char *j, long top, struct SearchingTable **table
 
         if (j != NULL && (*table)[c].id != NULL)
         {
-            strcpy((*table)[c].id, j);
+            (*table)[c].id= j;
+
+           /* strcpy((*table)[c].id, j); */
         }
     }
     if (vertex->left_child)
