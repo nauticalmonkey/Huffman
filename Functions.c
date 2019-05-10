@@ -29,10 +29,10 @@ void insertFTable(int **ft, unsigned char c)
     return;
 }
 
-Node *buildTree(int *freqTable)
+vertex *buildTree(int *freqTable)
 {
-    listNode *queue = NULL;
-    Node *root = NULL;
+    listvertex *queue = NULL;
+    vertex *root = NULL;
     int i;
 
     for (i = 0; i < CHARACTERAMOUNT; i++)
@@ -40,7 +40,7 @@ Node *buildTree(int *freqTable)
         if (freqTable[i] > 0)
         {
 
-            pushNewNode(&queue, (unsigned char)i, freqTable[i]);
+            pushNewvertex(&queue, (unsigned char)i, freqTable[i]);
         }
     }
 
@@ -55,32 +55,60 @@ Node *buildTree(int *freqTable)
 
     while (size(queue) > 1)
     {
-        Node *left = poll(&queue);
-        Node *right = poll(&queue);
-        listNode *parent = newListNode('\0', (unsigned int)right->amount + (unsigned int)left->amount, left, right);
-        pushNode(&queue, parent);
+        vertex *left = poll(&queue);
+        vertex *right = poll(&queue);
+        listvertex *parent = newListvertex('\0', (unsigned int)right->amount + (unsigned int)left->amount, left, right);
+        pushvertex(&queue, parent);
     }
 
     root = poll(&queue);
-    numIDs = root->amount;
+    numCodes = root->amount;
 
     return root;
 }
 
+listvertex *newListvertex(unsigned char c, int amount, vertex *left, vertex *right)
+{
+    listvertex *new = (listvertex *)malloc(sizeof(listvertex));
 
-int isLeaf(Node *n)
+    new->curr = newvertex(c, amount, left, right);
+
+    new->next = NULL;
+    return new;
+}
+
+int size(listvertex *head)
+{
+    if (head == NULL)
+        return 0;
+    else if (head->next == NULL)
+        return 1;
+    int count = 1;
+
+    while (head->next)
+    {
+        head = head->next;
+        count++;
+    }
+    return count;
+}
+
+
+
+
+int isLeaf(vertex *n)
 {
     if (n->left_child == NULL && n->right_child == NULL)
         return TRUE;
     return FALSE;
 }
 
-void makeLTable(Node *node, char *s, long top, struct SearchingTable **table)
+void makeLTable(vertex *vertex, char *s, long top, struct SearchingTable **table)
 {
 
-    unsigned char c = (unsigned char)node->c;
+    unsigned char c = (unsigned char)vertex->character;
 
-    if (isLeaf(node))
+    if (isLeaf(vertex))
     {
         s[top] = '\0';
 
@@ -91,19 +119,19 @@ void makeLTable(Node *node, char *s, long top, struct SearchingTable **table)
             strcpy((*table)[c].id, s);
         }
     }
-    if (node->left_child)
+    if (vertex->left_child)
     {
         s[top] = '0';
-        makeLTable(node->left_child, s, top + 1, table);
+        makeLTable(vertex->left_child, s, top + 1, table);
     }
-    if (node->right_child)
+    if (vertex->right_child)
     {
         s[top] = '1';
-        makeLTable(node->right_child, s, top + 1, table);
+        makeLTable(vertex->right_child, s, top + 1, table);
     }
 }
 
-  struct SearchingTable *buildSearchTable(Node *root)
+  struct SearchingTable *buildSearchTable(vertex *root)
 {
     struct SearchingTable *table = (struct SearchingTable *)calloc(CHARACTERAMOUNT + 1, sizeof(struct SearchingTable));
     char *s = (char *)calloc(CHARACTERAMOUNT, sizeof(char));
@@ -113,14 +141,14 @@ void makeLTable(Node *node, char *s, long top, struct SearchingTable **table)
 }
 
 
-Node *newNode(unsigned char c, int amount, Node *left, Node *right)
+vertex *newvertex(unsigned char character, int amount, vertex *left, vertex *right)
 {
-    Node *new;
-    if ((new = (Node *)malloc(sizeof(Node))) == NULL)
+    vertex *new;
+    if ((new = (vertex *)malloc(sizeof(vertex))) == NULL)
         return NULL;
 
     new->amount = amount;
-    new->c = c;
+    new->character = character;
 
     new->left_child = left;
     new->right_child = right;
@@ -137,50 +165,24 @@ void padding(unsigned char ch, int n)
 }
 
 
-listNode *newListNode(unsigned char c, int amount, Node *left, Node *right)
-{
-    listNode *new = (listNode *)malloc(sizeof(listNode));
-
-    new->curr = newNode(c, amount, left, right);
-
-    new->next = NULL;
-    return new;
-}
-
-int size(listNode *head)
-{
-    if (head == NULL)
-        return 0;
-    else if (head->next == NULL)
-        return 1;
-    int count = 1;
-
-    while (head->next)
-    {
-        head = head->next;
-        count++;
-    }
-    return count;
-}
-
-void pushNewNode(listNode **head, unsigned char c, int amount)
+void pushNewvertex(listvertex **head, unsigned char c, int amount)
 {
 
-    listNode *beg = *head;
-    listNode *tempNode;
+    listvertex *beg = *head;
+    listvertex *tempvertex;
 
-    tempNode = newListNode(c, amount, NULL, NULL);
+    tempvertex = newListvertex(c, amount, NULL, NULL);
 
     if (!*head)
     {
-        *head = tempNode;
+        *head = tempvertex;
         return;
     }
 
     if (beg->curr->amount > amount)
     {
-        tempNode->next = *head;
-        *head = tempNode;
+        tempvertex->next = *head;
+        *head = tempvertex;
     }
     else
     {
@@ -190,20 +192,20 @@ void pushNewNode(listNode **head, unsigned char c, int amount)
             beg = beg->next;
         }
 
-        while (beg->next != NULL && beg->next->curr->amount == amount && beg->next->curr->c < c)
+        while (beg->next != NULL && beg->next->curr->amount == amount && beg->next->curr->character < c)
         {
 
             beg = beg->next;
         }
-        tempNode->next = beg->next;
-        beg->next = tempNode;
+        tempvertex->next = beg->next;
+        beg->next = tempvertex;
     }
 }
 
-void pushNode(listNode **head, listNode *parent)
+void pushvertex(listvertex **head, listvertex *parent)
 {
 
-    listNode *beg = *head;
+    listvertex *beg = *head;
 
     if (!*head)
     {
@@ -239,9 +241,9 @@ void pushNode(listNode **head, listNode *parent)
         beg->next = parent;
     }
 }
-void pop(listNode **head)
+void pop(listvertex **head)
 {
-    listNode *temp = *head;
+    listvertex *temp = *head;
 
     (*head) = (*head)->next;
 
@@ -249,20 +251,20 @@ void pop(listNode **head)
     free(temp);
 }
 
-Node *peek(listNode **head)
+vertex *peek(listvertex **head)
 {
     return (*head)->curr;
 }
 
-Node *poll(listNode **head)
+vertex *poll(listvertex **head)
 {
-    Node *temp = (Node *)malloc(sizeof(Node));
+    vertex *temp = (vertex *)malloc(sizeof(vertex));
 
     if (*head == NULL)
         return NULL;
     else
     {
-        temp->c = peek(head)->c;
+        temp->character = peek(head)->character;
         temp->amount = peek(head)->amount;
         temp->right_child = peek(head)->right_child;
         temp->left_child = peek(head)->left_child;
@@ -272,19 +274,19 @@ Node *poll(listNode **head)
     return temp;
 }
 
-int isEmpty(listNode **head)
+int isEmpty(listvertex **head)
 {
     return (*head) == NULL;
 }
 
-void transverse(listNode *head)
+void transverse(listvertex *head)
 {
     while (head->next != NULL)
     {
-        printf("node chacter %c and  %d\n", head->curr->c, head->curr->amount);
+        printf("vertex chacter %c and  %d\n", head->curr->c, head->curr->amount);
         head = head->next;
     }
-    printf("node chacter %c and  %d\n", head->curr->c, head->curr->amount);
+    printf("vertex chacter %c and  %d\n", head->curr->c, head->curr->amount);
 }
 
 void print_binary(char x)
@@ -366,7 +368,7 @@ void SafeFreeLookTable(struct SearchingTable *table)
     return;
 }
 
-void SafeFreeTree(Node *tree)
+void SafeFreeTree(vertex *tree)
 {
     if (tree == NULL)
         return;

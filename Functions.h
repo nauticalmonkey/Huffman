@@ -16,43 +16,43 @@ struct SearchingTable{
         char *id;
 };
 
-typedef struct node{
-    unsigned char c;
+typedef struct vertex{
+    unsigned char character;
     int amount;
-    struct node *left_child;
-    struct node *right_child;
-}Node;
+    struct vertex *left_child;
+    struct vertex *right_child;
+}vertex;
 
-typedef struct nodeList{
-    Node *curr;
-    struct  nodeList *next;
-}listNode;
+typedef struct vertexList{
+    vertex *curr;
+    struct  vertexList *next;
+}listvertex;
 
 
 
 
 int *buildFTable();
 void insertFTable(int **ft, unsigned char c);
-Node *buildTree(int *freqTable);
-int isLeaf(Node *n);
-void makeLTable(Node *node, char *s, long top ,struct SearchingTable **table);
+vertex *buildTree(int *freqTable);
+int isLeaf(vertex *n);
+void makeLTable(vertex *vertex, char *s, long top ,struct SearchingTable **table);
 
-struct SearchingTable *buildSearchTable(Node *root);
-Node *newNode(unsigned char c, int freq, Node *left, Node *right);
+struct SearchingTable *buildSearchTable(vertex *root);
+vertex *newvertex(unsigned char c, int freq, vertex *left, vertex *right);
 void padding ( unsigned char ch, int n );
-listNode *newListNode(unsigned char c, int freq, Node *left , Node *right);
-int size(listNode *head);
-void pushNewNode(listNode **head, unsigned char c, int freq);
-void pushNode(listNode **head, listNode *parent);
-void pop(listNode ** head);
-Node *peek(listNode ** head);
-Node *poll(listNode **head);
-int isEmpty(listNode **head);
-void transverse(listNode *head);
+listvertex *newListvertex(unsigned char c, int freq, vertex *left , vertex *right);
+int size(listvertex *head);
+void pushNewvertex(listvertex **head, unsigned char c, int freq);
+void pushvertex(listvertex **head, listvertex *parent);
+void pop(listvertex ** head);
+vertex *peek(listvertex ** head);
+vertex *poll(listvertex **head);
+int isEmpty(listvertex **head);
+void transverse(listvertex *head);
 char *readLongLine(int inFd);
 void safebufferFree(char *buff);
 void SafeFreeLookTable(struct SearchingTable *table);
-void SafeFreeTree(Node *tree);
+void SafeFreeTree(vertex *tree);
 void SafeFreeFreqTable(int *ft);
 void checkFTable(int *ft);
 void printLookUpTable(struct SearchingTable *table);

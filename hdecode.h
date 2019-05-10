@@ -11,6 +11,6 @@ extern int AmountofUniqCares;
 int decodeHeader(int , Node **, int **);
 void decodeFile(int , int , Node **, int **);
 void decodeBody(int , int , int , int , Node *, int *);
-int totChars(int *);
+int careTotal(int *);
 
 #endif

@@ -1,10 +1,10 @@
 #include "hdecode.h"
 char *lnBuffer;
 
-void SafeFreeAllD(int *ft, Node *Tree, unsigned char *lnBuffer)
+void SafeFreeAllD(int *amountTable , vertex *Tree, unsigned char *lnBuffer)
 {
-    if (ft != NULL)
-        SafeFreeFreqTable(ft);
+    if (amountTable != NULL)
+        SafeFreeFreqTable(amountTable );
     if (Tree != NULL)
         SafeFreeTree(Tree);
     if (pbuff != NULL)
@@ -12,15 +12,15 @@ void SafeFreeAllD(int *ft, Node *Tree, unsigned char *lnBuffer)
     return;
 }
 
-int decodeHeader(int inFd, Node **HenTree, int **ft)
+int decodeHeader(int fileIn, vertex **HenTree, int **amountTable )
 {
     int AmountofUniqCares = 0;
     uint32_t i;
     uint32_t front = 0;
     uint8_t c;
 
-    *ft = buildFTable();
-    if ((read(inFd, &i, sizeof(int))) <= 0)
+    *amountTable = buildFTable();
+    if ((read(fileIn, &i, sizeof(int))) <= 0)
     {
         fprintf(stderr, "error reading file\n");
         exit(-1);
@@ -30,30 +30,30 @@ int decodeHeader(int inFd, Node **HenTree, int **ft)
 
     for (i = 0; i < AmountofUniqCares; i++)
     {
-        if ((read(inFd, &c, sizeof(uint8_t))) <= 0)
+        if ((read(fileIn, &c, sizeof(uint8_t))) <= 0)
         {
             fprintf(stderr, "error reading file\n");
             exit(-1);
         }
 
-        if ((read(inFd, &front, sizeof(uint32_t))) <= 0)
+        if ((read(fileIn, &front, sizeof(uint32_t))) <= 0)
         {
             fprintf(stderr, "error reading file\n");
             exit(-1);
         }
 
-        ft[0][(unsigned char)c] = front;
+        amountTable[0][(unsigned char)c] = front;
     }
 
-    if (*ft != NULL)
+    if (*amountTable != NULL)
     {
-        *HenTree = buildTree(*ft);
+        *HenTree = buildTree(*amountTable);
     }
 
     return AmountofUniqCares;
 }
 
-void decodeBody(int inFd, int outFd, int numberoftCares, int numOfUniqueChars, Node *HenTree, int *ft)
+void decodeBody(int fileIn, int fileOut, int amounitOfTotalUniqCares, int numOfUniqueChars, vertex *HenTree, int *amountTable)
 {
 
     int indexBuff;
@@ -61,10 +61,10 @@ void decodeBody(int inFd, int outFd, int numberoftCares, int numOfUniqueChars, N
     int numCodes = 0;
     uint8_t mask = ENDMASK;
 
-    Node *root = HenTree;
-    lnBuffer = readLongLine(inFd);
+    vertex *root = HenTree;
+    lnBuffer = readLongLine(fileIn);
 
-    for (i = numberoftCares, indexBuff = 0; i > 0 && HenTree != NULL; i--, HenTree = root)
+    for (i = amounitOfTotalUniqCares, indexBuff = 0; i > 0 && HenTree != NULL; i--, HenTree = root)
     {
 
         while (!isLeaf(HenTree))
@@ -85,7 +85,7 @@ void decodeBody(int inFd, int outFd, int numberoftCares, int numOfUniqueChars, N
                 mask = ENDMASK;
             }
         }
-        if (write(outFd, &HenTree->c, sizeof(unsigned char)) <= 0)
+        if (write(fileOut, &HenTree->c, sizeof(unsigned char)) <= 0)
             perror("write error\n");
     }
 
@@ -97,45 +97,45 @@ void decodeBody(int inFd, int outFd, int numberoftCares, int numOfUniqueChars, N
         {
             for (i = 0; i < CHARACTERAMOUNT; i++)
             {
-                if (ft[i] > 0)
+                if (amountTable[i] > 0)
                     ch = i;
             }
         }
-        while (numberoftCares != 0)
+        while (amounitOfTotalUniqCares != 0)
         {
-            if (write(outFd, &ch, sizeof(unsigned char)) <= 0)
+            if (write(fileOut, &ch, sizeof(unsigned char)) <= 0)
             {
                 perror("write error\n");
             }
-            numberoftCares--;
+            amounitOfTotalUniqCares--;
         }
     }
 }
 
-void decodeFile(int inFd, int outFd, Node **HenTree, int **ft)
+void decodeFile(int fileIn, int fileOut, vertex **HenTree, int **amountTable)
 {
 
     int AmountofUniqCares;
     int i;
 
-    AmountofUniqCares = decodeHeader(inFd, HenTree, ft);
+    AmountofUniqCares = decodeHeader(fileIn, HenTree, amountTable);
 
-    decodeBody(inFd, outFd, totChars(*ft), AmountofUniqCares, *HenTree, *ft);
+    decodeBody(fileIn, fileOut, careTotal(*amountTable), AmountofUniqCares, *HenTree, *amountTable);
 }
 
-int totChars(int *ft)
+int careTotal(int *amountTable)
 {
     int tot = 0;
 
-    if (ft == NULL)
+    if (amountTable == NULL)
         return 0;
 
     int j;
 
     for (j = 0; j < CHARACTERAMOUNT; j++)
     {
-        if (ft[j] > 0)
-            tot += ft[j];
+        if (amountTable[j] > 0)
+            tot += amountTable[j];
     }
     return tot;
 }
@@ -143,8 +143,8 @@ int totChars(int *ft)
 int main(int argc, char *argv[])
 {
 
-    int inFd, outFd, inSavedFd, outSavedFd, *ft;
-    Node *root;
+    int fileIn, fileOut, inSavedFd, outSavedFd, *amountTable;
+    vertex *root;
 
     int readStdIn = argc == 1 || (argc == 2 && strcmp(argv[1], "-") == 0);
 
@@ -156,41 +156,41 @@ int main(int argc, char *argv[])
 
     if (!readStdIn)
     {
-        if ((inFd = open(argv[1], O_RDONLY)) == -1)
+        if ((fileIn = open(argv[1], O_RDONLY)) == -1)
         {
             perror(argv[2]);
             exit(-1);
         }
         inSavedFd = dup(0);
-        dup2(inFd, 0);
+        dup2(fileIn, 0);
     }
 
     if (argc == 3)
     {
 
-        if ((outFd = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0700)) == -1)
+        if ((fileOut = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0700)) == -1)
         {
             perror(argv[2]);
             exit(-1);
         }
         outSavedFd = dup(1);
-        dup2(outFd, 1);
+        dup2(fileOut, 1);
     }
 
-    decodeFile(0, 1, &root, &ft);
+    decodeFile(0, 1, &root, &amountTable);
 
     if ((argc == 3 || argc == 2) && (strcmp(argv[1], "-")))
     {
         dup2(inSavedFd, 0);
-        close(inFd);
+        close(fileIn);
     }
     if (argc == 3)
     {
         dup2(outSavedFd, 1);
-        close(outFd);
+        close(fileOut);
     }
 
-    SafeFreeAllD(ft, root, lnBuffer);
+    SafeFreeAllD(amountTable, root, lnBuffer);
 
     return 0;
 }
