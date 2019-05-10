@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
 
     if (AmountofUniqCares == 0)
     {
-        write(1, &nuthin, sizeof(uint32_t));
+        /*write(1, &nuthin, sizeof(uint32_t));*/
     }
 
     SafeFreeAll(head, IdTable, ft, startingHead);
