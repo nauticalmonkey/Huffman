@@ -2,13 +2,13 @@
 #define FREQTABLE
 
 #define ALPHABET_SIZE 256
-#define MAXCHAR 1000 /*inital amt of lines in the buffer*/
+#define BUFFERAMOUNT 1200 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
 #include <fcntl.h>
-#include <unistd.h>
+/*#include <unistd.h>*/
 
 struct lookUpTable{
         char *code;
