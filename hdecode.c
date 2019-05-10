@@ -11,94 +11,85 @@ void SafeFreeAllD(int *ft, Node *Tree, unsigned char *buff)
     return;
 }
 
-int decodeHeader(int inFd, Node **huffmanTree, int **ft)
+int decodeHeader(int inFd, Node **HenTree, int **ft)
 {
-    int AmountofUniqCares;
-    AmountofUniqCares = 0;
-
+    int AmountofUniqCares = 0;
     uint32_t i;
-
+    uint32_t front = 0;
     uint8_t c;
 
-    *ft = buildFreqTable();
+    *ft = buildFTable();
     if ((read(inFd, &i, sizeof(int))) <= 0)
     {
-        perror("error reading file\n");
+        fprintf(stderr, "error reading file\n");
         exit(-1);
     }
 
     AmountofUniqCares = (int)i;
 
-    uint32_t ft_adder;
-    ft_adder = 0;
+    uint32_t front = 0;
     for (i = 0; i < AmountofUniqCares; i++)
     {
         if ((read(inFd, &c, sizeof(uint8_t))) <= 0)
         {
-            perror("error reading file\n");
+            fprintf(stderr, "error reading file\n");
             exit(-1);
         }
 
-        if ((read(inFd, &ft_adder, sizeof(uint32_t))) <= 0)
+        if ((read(inFd, &front, sizeof(uint32_t))) <= 0)
         {
-            perror("error reading file\n");
+            fprintf(stderr, "error reading file\n");
             exit(-1);
         }
 
-        ft[0][(unsigned char)c] = ft_adder;
+        ft[0][(unsigned char)c] = front;
     }
 
     if (*ft != NULL)
     {
-        *huffmanTree = buildHuffTree(*ft);
+        *HenTree = buildTree(*ft);
     }
 
     return AmountofUniqCares;
 }
 
-void decodeBody(int inFd, int outFd, int numTotalChars, int numOfUniqueChars, Node *huffmanTree, int *ft)
+void decodeBody(int inFd, int outFd, int numberoftCares, int numOfUniqueChars, Node *HenTree, int *ft)
 {
 
     int indexBuff;
-
-    Node *root = huffmanTree;
-
-    buff = read_long_line(inFd);
-
-    uint8_t mask;
-    mask = MASK_MSB;
-
     int i;
+    int numCodes = 0;
+    uint8_t mask = ENDMASK;
 
-    int numCodes;
-    numCodes = 0;
+    Node *root = HenTree;
+    lnBuffer = readLongLine(inFd);
 
-    for (i = numTotalChars, indexBuff = 0; i > 0 && huffmanTree != NULL; i--, huffmanTree = root)
+    for (i = numberoftCares, indexBuff = 0; i > 0 && HenTree != NULL; i--, HenTree = root)
     {
 
-        while (!isLeaf(huffmanTree))
+        while (!isLeaf(HenTree))
         {
 
-            if ((buff[indexBuff] & mask) == 0)
+            if ((lnBuffer[indexBuff] & mask) == 0)
             {
-                huffmanTree = huffmanTree->left_child;
+                HenTree = HenTree->left_child;
             }
             else
             {
-                huffmanTree = huffmanTree->right_child;
+                HenTree = HenTree->right_child;
             }
 
             if ((mask = mask >> 1) == 0)
             {
                 indexBuff++;
-                mask = MASK_MSB;
+                mask = ENDMASK;
             }
         }
-        if (write(outFd, &huffmanTree->c, sizeof(unsigned char)) <= 0)
+        if (write(outFd, &HenTree->c, sizeof(unsigned char)) <= 0)
             perror("write error\n");
     }
 
-    if (huffmanTree == NULL)
+    if (HenTree == NULL)
     {
         int i;
         char ch;
@@ -110,25 +101,26 @@ void decodeBody(int inFd, int outFd, int numTotalChars, int numOfUniqueChars, No
                     ch = i;
             }
         }
-        while (numTotalChars != 0)
+        while (numberoftCares != 0)
         {
             if (write(outFd, &ch, sizeof(unsigned char)) <= 0)
             {
                 perror("write error\n");
             }
-            numTotalChars--;
+            numberoftCares--;
         }
     }
 }
 
-void decodeFile(int inFd, int outFd, Node **huffmanTree, int **ft)
+void decodeFile(int inFd, int outFd, Node **HenTree, int **ft)
 {
 
-    int numUniqueChars;
-    numUniqueChars = decodeHeader(inFd, huffmanTree, ft);
+    int AmountofUniqCares;
     int i;
 
-    decodeBody(inFd, outFd, totChars(*ft), numUniqueChars, *huffmanTree, *ft);
+    AmountofUniqCares = decodeHeader(inFd, HenTree, ft);
+
+    decodeBody(inFd, outFd, totChars(*ft), AmountofUniqCares, *HenTree, *ft);
 }
 
 int totChars(int *ft)
@@ -198,7 +190,7 @@ int main(int argc, char *argv[])
         close(outFd);
     }
 
-    SafeFreeAllD(ft, root, buff);
+    SafeFreeAllD(ft, root, lnBuffer);
 
     return 0;
 }

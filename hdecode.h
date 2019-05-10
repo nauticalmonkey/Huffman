@@ -4,15 +4,14 @@
 #include "Functions.h"
 #include <stdint.h>
 
-#define RD_MODE 0444
-#define MASK_MSB 0x80
+#define ENDMASK 0x80
 
-extern char *buff;
+extern char *lnBuffer;
 extern int AmountofUniqCares;
 
-int decodeHeader(int inFd, Node **huffmanTree, int **ft);
-void decodeBody(int inFd, int outFd, int numTotalChars, int AmountofUniqCares, Node *huffmanTree, int *ft);
-int totChars(int *ft);
-void decodeFile(int inFd, int outFd, Node **huffmanTree, int **ft);
+int decodeHeader(int , Node **, int **);
+void decodeFile(int , int , Node **, int **);
+void decodeBody(int , int , int , int , Node *, int *);
+int totChars(int *);
 
 #endif

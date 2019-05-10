@@ -1,34 +1,30 @@
 #ifndef HENCODE_H
 #define HENCODE_H
-
-
+#define BYTE 8.0
+#define MASK 1
 
 #include <stdint.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <math.h>
 #include "Functions.h"
 
-#define ALPHABET_SIZE 256
-#define BYTE 8.0
-#define MASK 1
 
 extern int AmountofUniqCares;
 extern int numCodes;
 
 
-typedef struct headerBits
+typedef struct header
 {
-    uint8_t character;
-    uint32_t frequency; /*number of chars in freq table*/
+    uint8_t Care;
+    uint32_t amount;
 
 }Header;
 
-Header *CreateHead(int *ft, int AmountofUniqCares);
-void CheackHead(Header *header, int AmountofUniqCares);
-int HowManyBits(struct SearchingTable *table);
-int BWrite(char c, int lenCode, uint8_t *byte, struct SearchingTable *codeTable);
-void SafeFreeAll(Node *huffmanTree, struct SearchingTable *table, int *freqTable, Header *header);
-void SafeFreeHeader(Header *header);
+Header *CreateHead(int *, int );
+void CheackHead(Header *, int );
+int HowManyBits(struct SearchingTable *);
+int BWrite(char , int , struct SearchingTable* , uint8_t*);
+void SafeFreeAll(Node *, struct SearchingTable *, int *, Header *);
+void SafeFreeHeader(Header *);
 #endif
 

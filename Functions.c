@@ -2,19 +2,19 @@
 int AmountofUniqCares = 0;
 int Indexer = 0;
 
-int *buildFreqTable()
+int *buildFTable()
 {
 
-    int *freq = (int *)malloc(ALPHABET_SIZE * sizeof(int));
+    int *amount = (int *)malloc(CHARACTERAMOUNT * sizeof(int));
 
     int i;
-    for (i = 0; i < ALPHABET_SIZE; i++)
-        freq[i] = 0;
+    for (i = 0; i < CHARACTERAMOUNT; i++)
+        amount[i] = 0;
 
-    return freq;
+    return amount;
 }
 
-void insertToFreqTable(int **ft, unsigned char c)
+void insertFTable(int **ft, unsigned char c)
 {
 
     if (*ft != NULL)
@@ -29,71 +29,44 @@ void insertToFreqTable(int **ft, unsigned char c)
     return;
 }
 
-void printFreqTable(int *freqTable)
+Node *buildTree(int *freqTable)
 {
-    int i;
-    for (i = 0; i < ALPHABET_SIZE; i++)
-    {
-        if (freqTable[i] > 0)
-            printf("freqTable[ %c ] = %d\n", (unsigned char)i, freqTable[i]);
-    }
-}
-
-void SafeFreeFreqTable(int *ft)
-{
-    if (ft != NULL)
-        free(ft);
-    return;
-}
-
-
-Node *buildHuffTree(int *freqTable)
-{
-    listNode *priorityQ = NULL;
+    listNode *queue = NULL;
     Node *root = NULL;
     int i;
 
-    for (i = 0; i < ALPHABET_SIZE; i++)
+    for (i = 0; i < CHARACTERAMOUNT; i++)
     {
         if (freqTable[i] > 0)
         {
 
-            pushNewNode(&priorityQ, (unsigned char)i, freqTable[i]);
+            pushNewNode(&queue, (unsigned char)i, freqTable[i]);
         }
     }
 
-    if (priorityQ == NULL)
+    if (queue == NULL)
         return NULL;
 
-    if (size(priorityQ) == 1)
+    if (size(queue) == 1)
     {
-        poll(&priorityQ);
+        poll(&queue);
         return NULL;
     }
 
-    while (size(priorityQ) > 1)
+    while (size(queue) > 1)
     {
-        Node *left = poll(&priorityQ);
-        Node *right = poll(&priorityQ);
-        listNode *parent = newListNode('\0', (unsigned int)right->freq + (unsigned int)left->freq, left, right);
-        pushNode(&priorityQ, parent);
+        Node *left = poll(&queue);
+        Node *right = poll(&queue);
+        listNode *parent = newListNode('\0', (unsigned int)right->amount + (unsigned int)left->amount, left, right);
+        pushNode(&queue, parent);
     }
 
-    root = poll(&priorityQ);
-    numCodes = root->freq;
+    root = poll(&queue);
+    numCodes = root->amount;
 
     return root;
 }
 
-void inorder(Node *root)
-{
-    if (root == NULL)
-        return;
-
-    inorder(root->left_child);
-    printf("binary tree node with value char %c and freq %d\n", root->c, root->freq);
-    inorder(root->right_child);
-}
 
 int isLeaf(Node *n)
 {
@@ -102,19 +75,7 @@ int isLeaf(Node *n)
     return FALSE;
 }
 
-void SafeFreeTree(Node *tree)
-{
-    if (tree == NULL)
-        return;
-    else
-    {
-        SafeFreeTree(tree->left_child);
-        SafeFreeTree(tree->right_child);
-        free(tree);
-    }
-}
-
-void initLookUpTable(Node *node, char *s, long top, struct SearchingTable **table)
+void makeLTable(Node *node, char *s, long top, struct SearchingTable **table)
 {
 
     unsigned char c = (unsigned char)node->c;
@@ -133,60 +94,32 @@ void initLookUpTable(Node *node, char *s, long top, struct SearchingTable **tabl
     if (node->left_child)
     {
         s[top] = '0';
-        initLookUpTable(node->left_child, s, top + 1, table);
+        makeLTable(node->left_child, s, top + 1, table);
     }
     if (node->right_child)
     {
         s[top] = '1';
-        initLookUpTable(node->right_child, s, top + 1, table);
+        makeLTable(node->right_child, s, top + 1, table);
     }
 }
 
-  struct SearchingTable *buildLookUpTable(Node *root)
+  struct SearchingTable *buildSearchTable(Node *root)
 {
-    struct SearchingTable *table = (struct SearchingTable *)calloc(ALPHABET_SIZE + 1, sizeof(struct SearchingTable));
-    char *s = (char *)calloc(ALPHABET_SIZE, sizeof(char));
-    initLookUpTable(root, s, 0, &table);
+    struct SearchingTable *table = (struct SearchingTable *)calloc(CHARACTERAMOUNT + 1, sizeof(struct SearchingTable));
+    char *s = (char *)calloc(CHARACTERAMOUNT, sizeof(char));
+    makeLTable(root, s, 0, &table);
     free(s);
     return table;
 }
 
-void printLookUpTable(struct SearchingTable *table)
-{
-    if (table != NULL)
-    {
-        int i;
-        for (i = 0; i < ALPHABET_SIZE; i++)
-            if (table[i].code != NULL)
-            {
-                printf("0x%x: %s\n", i, table[i].code);
-            }
-    }
-    return;
-}
 
-void SafeFreeLookTable(struct SearchingTable *table)
-{
-    if (table != NULL)
-    {
-        int i;
-        for (i = 0; i < ALPHABET_SIZE; i++)
-            if (table[i].code != NULL)
-            {
-                free(table[i].code);
-            }
-        free(table);
-    }
-    return;
-}
-
-Node *newNode(unsigned char c, int freq, Node *left, Node *right)
+Node *newNode(unsigned char c, int amount, Node *left, Node *right)
 {
     Node *new;
     if ((new = (Node *)malloc(sizeof(Node))) == NULL)
         return NULL;
 
-    new->freq = freq;
+    new->amount = amount;
     new->c = c;
 
     new->left_child = left;
@@ -203,28 +136,12 @@ void padding(unsigned char ch, int n)
         putchar(ch);
 }
 
-void structure(struct node *root, int level)
-{
 
-    if (root == NULL)
-    {
-        padding('\t', level);
-        puts("~");
-    }
-    else
-    {
-        structure(root->right_child, level + 1);
-        padding('\t', level);
-        printf("%c\n", root->c);
-        structure(root->left_child, level + 1);
-    }
-}
-
-listNode *newListNode(unsigned char c, int freq, Node *left, Node *right)
+listNode *newListNode(unsigned char c, int amount, Node *left, Node *right)
 {
     listNode *new = (listNode *)malloc(sizeof(listNode));
 
-    new->curr = newNode(c, freq, left, right);
+    new->curr = newNode(c, amount, left, right);
 
     new->next = NULL;
     return new;
@@ -246,13 +163,13 @@ int size(listNode *head)
     return count;
 }
 
-void pushNewNode(listNode **head, unsigned char c, int freq)
+void pushNewNode(listNode **head, unsigned char c, int amount)
 {
 
     listNode *beg = *head;
     listNode *tempNode;
 
-    tempNode = newListNode(c, freq, NULL, NULL);
+    tempNode = newListNode(c, amount, NULL, NULL);
 
     if (!*head)
     {
@@ -260,7 +177,7 @@ void pushNewNode(listNode **head, unsigned char c, int freq)
         return;
     }
 
-    if (beg->curr->freq > freq)
+    if (beg->curr->amount > amount)
     {
         tempNode->next = *head;
         *head = tempNode;
@@ -268,12 +185,12 @@ void pushNewNode(listNode **head, unsigned char c, int freq)
     else
     {
 
-        while (beg->next != NULL && beg->next->curr->freq < freq)
+        while (beg->next != NULL && beg->next->curr->amount < amount)
         {
             beg = beg->next;
         }
 
-        while (beg->next != NULL && beg->next->curr->freq == freq && beg->next->curr->c < c)
+        while (beg->next != NULL && beg->next->curr->amount == amount && beg->next->curr->c < c)
         {
 
             beg = beg->next;
@@ -294,7 +211,7 @@ void pushNode(listNode **head, listNode *parent)
         return;
     }
 
-    if (beg->curr->freq > parent->curr->freq)
+    if (beg->curr->amount > parent->curr->amount)
     {
         parent->next = *head;
         *head = parent;
@@ -303,15 +220,15 @@ void pushNode(listNode **head, listNode *parent)
     else
     {
 
-        while (beg->next != NULL && beg->next->curr->freq < parent->curr->freq)
+        while (beg->next != NULL && beg->next->curr->amount < parent->curr->amount)
         {
             beg = beg->next;
         }
 
-        if (beg->next != NULL && beg->next->curr->freq == parent->curr->freq)
+        if (beg->next != NULL && beg->next->curr->amount == parent->curr->amount)
         {
 
-            while (beg->next != NULL && beg->next->curr->freq == parent->curr->freq && beg->next->curr->c < parent->curr->c)
+            while (beg->next != NULL && beg->next->curr->amount == parent->curr->amount && beg->next->curr->c < parent->curr->c)
             {
 
                 beg = beg->next;
@@ -346,7 +263,7 @@ Node *poll(listNode **head)
     else
     {
         temp->c = peek(head)->c;
-        temp->freq = peek(head)->freq;
+        temp->amount = peek(head)->amount;
         temp->right_child = peek(head)->right_child;
         temp->left_child = peek(head)->left_child;
 
@@ -364,10 +281,10 @@ void transverse(listNode *head)
 {
     while (head->next != NULL)
     {
-        printf("node chacter %c and  %d\n", head->curr->c, head->curr->freq);
+        printf("node chacter %c and  %d\n", head->curr->c, head->curr->amount);
         head = head->next;
     }
-    printf("node chacter %c and  %d\n", head->curr->c, head->curr->freq);
+    printf("node chacter %c and  %d\n", head->curr->c, head->curr->amount);
 }
 
 void print_binary(char x)
@@ -399,7 +316,7 @@ void printbincharpad(char c)
     putchar('\n');
 }
 
-char *read_long_line(int inFd)
+char *readLongLine(int inFd)
 {
     int sizebuff = BUFFERAMOUNT;
     char c;
@@ -420,10 +337,68 @@ char *read_long_line(int inFd)
     return pbuff;
 }
 
-void freeBuffs(char *buff)
+void safebufferFree(char *buff)
 {
     if (buff != NULL)
         free(buff);
     return;
 }
 
+void SafeFreeFreqTable(int *ft)
+{
+    if (ft != NULL)
+        free(ft);
+    return;
+}
+
+void SafeFreeLookTable(struct SearchingTable *table)
+{
+    if (table != NULL)
+    {
+        int i;
+        for (i = 0; i < CHARACTERAMOUNT; i++)
+            if (table[i].code != NULL)
+            {
+                free(table[i].code);
+            }
+        free(table);
+    }
+    return;
+}
+
+void SafeFreeTree(Node *tree)
+{
+    if (tree == NULL)
+        return;
+    else
+    {
+        SafeFreeTree(tree->left_child);
+        SafeFreeTree(tree->right_child);
+        free(tree);
+    }
+}
+
+void checkFTable(int *freqTable)
+{
+    int i;
+    for (i = 0; i < CHARACTERAMOUNT; i++)
+    {
+        if (freqTable[i] > 0)
+            printf("freqTable[ %c ] = %d\n", (unsigned char)i, freqTable[i]);
+    }
+}
+
+
+void printLookUpTable(struct SearchingTable *table)
+{
+    if (table != NULL)
+    {
+        int i;
+        for (i = 0; i < CHARACTERAMOUNT; i++)
+            if (table[i].code != NULL)
+            {
+                printf("0x%x: %s\n", i, table[i].code);
+            }
+    }
+    return;
+}

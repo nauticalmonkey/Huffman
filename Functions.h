@@ -1,7 +1,7 @@
 #ifndef FREQTABLE
 #define FREQTABLE
 
-#define ALPHABET_SIZE 256
+#define CHARACTERAMOUNT 256
 #define BUFFERAMOUNT 1200 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,13 +10,15 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+typedef enum boolean{FALSE,TRUE} bool;
+
 struct SearchingTable{
-        char *code;
+        char *id;
 };
 
 typedef struct node{
     unsigned char c;
-    int freq;
+    int amount;
     struct node *left_child;
     struct node *right_child;
 }Node;
@@ -27,22 +29,17 @@ typedef struct nodeList{
 }listNode;
 
 
-typedef enum boolean{FALSE,TRUE} bool;
-int *buildFreqTable();
-void insertToFreqTable(int **ft, unsigned char c);
-void printFreqTable(int *ft);
-void SafeFreeFreqTable(int *ft);
-Node *buildHuffTree(int *freqTable);
-void inorder(Node *root);
+
+
+int *buildFTable();
+void insertFTable(int **ft, unsigned char c);
+Node *buildTree(int *freqTable);
 int isLeaf(Node *n);
-void SafeFreeTree(Node *tree);
-void initLookUpTable(Node *node, char *s, long top ,struct SearchingTable **table);
-struct SearchingTable *buildLookUpTable(Node *root);
-void printLookUpTable(struct SearchingTable *table);
-void SafeFreeLookTable(struct SearchingTable *table);
+void makeLTable(Node *node, char *s, long top ,struct SearchingTable **table);
+
+struct SearchingTable *buildSearchTable(Node *root);
 Node *newNode(unsigned char c, int freq, Node *left, Node *right);
 void padding ( unsigned char ch, int n );
-void structure ( struct node *root, int level );
 listNode *newListNode(unsigned char c, int freq, Node *left , Node *right);
 int size(listNode *head);
 void pushNewNode(listNode **head, unsigned char c, int freq);
@@ -52,8 +49,13 @@ Node *peek(listNode ** head);
 Node *poll(listNode **head);
 int isEmpty(listNode **head);
 void transverse(listNode *head);
-char *read_long_line(int inFd);
-void freeBuffs(char *buff);
+char *readLongLine(int inFd);
+void safebufferFree(char *buff);
+void SafeFreeLookTable(struct SearchingTable *table);
+void SafeFreeTree(Node *tree);
+void SafeFreeFreqTable(int *ft);
+void checkFTable(int *ft);
+void printLookUpTable(struct SearchingTable *table);
 void printbincharpad(char c);
 
 
