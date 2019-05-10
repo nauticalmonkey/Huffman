@@ -149,7 +149,6 @@ void enqueueVertex(listvertex **head, listvertex *parent)
 void makeLTable(vertex *vertex, char *j, long above, struct SearchingTable **table)
 {
 
-    /* unsigned char c = (unsigned char)vertex->character; */
     if (vertex==NULL){
         return;
     }
